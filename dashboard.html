@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>E-Commerce Customer Retention & Cohort Intelligence Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #0b0f19;
+      color: #f1f5f9;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .navbar {
+      height: 64px;
+      background: #111827;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #f8fafc;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .nav-filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-pill {
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-pill span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .author-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 6px 14px;
+      border-radius: 8px;
+    }
+
+    .author-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .author-text {
+      text-align: left;
+    }
+
+    .author-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .author-role {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    /* Main Dashboard Layout */
+    .dashboard-body {
+      flex: 1;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Row 1: KPI Cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .kpi-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .kpi-blue::after { background: #3b82f6; }
+    .kpi-red::after { background: #ef4444; }
+    .kpi-emerald::after { background: #10b981; }
+    .kpi-amber::after { background: #f59e0b; }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+    }
+
+    .kpi-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    .badge-pos { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .badge-neg { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .badge-neutral { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+    .kpi-value {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #f8fafc;
+      margin-bottom: 6px;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Grid Row 2 */
+    .grid-row-2 {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* Grid Row 3 */
+    .grid-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      height: 290px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title span.indicator {
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      color: #94a3b8;
+      background: #1f2937;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* Cohort Heatmap Table */
+    table.cohort-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 4px;
+      font-size: 12px;
+    }
+
+    table.cohort-table th {
+      color: #94a3b8;
+      font-weight: 600;
+      padding: 6px 8px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    table.cohort-table th:first-child,
+    table.cohort-table td:first-child {
+      text-align: left;
+      font-weight: 700;
+      color: #cbd5e1;
+      width: 90px;
+    }
+
+    table.cohort-table td:nth-child(2) {
+      font-weight: 600;
+      color: #94a3b8;
+      width: 70px;
+      text-align: center;
+    }
+
+    table.cohort-table td.heat {
+      border-radius: 6px;
+      text-align: center;
+      padding: 8px 4px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+    }
+
+    .heat-100 { background: #1e3a8a; color: #93c5fd; }
+    .heat-high { background: #1e40af; color: #bfdbfe; }
+    .heat-med { background: #1d4ed8; color: #dbeafe; }
+    .heat-low { background: #172554; color: #93c5fd; }
+    .heat-drop { background: #27272a; color: #71717a; }
+
+    /* RFM Donut / Segment List */
+    .rfm-container {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: center;
+      height: 100%;
+    }
+
+    .rfm-donut {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+
+    .rfm-donut svg {
+      transform: rotate(-90deg);
+    }
+
+    .rfm-donut-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .rfm-donut-text .val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .rfm-donut-text .lbl {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .rfm-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rfm-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #182234;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border-left: 3px solid;
+    }
+
+    .rfm-row.champions { border-color: #10b981; }
+    .rfm-row.promising { border-color: #3b82f6; }
+    .rfm-row.atrisk { border-color: #f59e0b; }
+    .rfm-row.hibernating { border-color: #ef4444; }
+
+    .rfm-title-grp h5 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .rfm-title-grp span {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .rfm-metrics {
+      text-align: right;
+    }
+
+    .rfm-metrics .pct {
+      font-size: 13px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .rfm-metrics .rev {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    /* Bar Charts Container */
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bar-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: #1f2937;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .fill-blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .fill-emerald { background: linear-gradient(90deg, #10b981, #34d399); }
+    .fill-amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .fill-rose { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+    /* Timeline Stepper */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .time-node {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #182234;
+      padding: 9px 12px;
+      border-radius: 8px;
+    }
+
+    .node-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      min-width: 58px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nb-green { background: #064e3b; color: #6ee7b7; }
+    .nb-blue { background: #1e3a8a; color: #93c5fd; }
+    .nb-amber { background: #78350f; color: #fde68a; }
+    .nb-red { background: #7f1d1d; color: #fca5a5; }
+
+    .node-text h6 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .node-text p {
+      font-size: 10.5px;
+      color: #94a3b8;
+    }
+
+    /* Strategic Levers Box */
+    .lever-card {
+      background: #182234;
+      border-left: 3px solid #3b82f6;
+      border-radius: 0 8px 8px 0;
+      padding: 9px 12px;
+      margin-bottom: 8px;
+    }
+
+    .lever-card h6 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .lever-card p {
+      font-size: 10.5px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .lever-pill {
+      font-size: 10px;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="brand">
+      <div class="brand-icon">BI</div>
+      <div>
+        <div class="brand-title">E-Commerce Customer Retention & Cohort Intelligence</div>
+        <div class="brand-subtitle">Executive Analytics Workspace | 1,200 Commercial Transactions Audit</div>
+      </div>
+    </div>
+
+    <div class="nav-filters">
+      <div class="filter-pill"><span class="dot"></span> Dataset: 1,200 Orders</div>
+      <div class="filter-pill">Currency: INR (₹)</div>
+      <div class="filter-pill">Window: 60-Day Churn</div>
+    </div>
+
+    <div class="author-badge">
+      <div class="author-avatar">NK</div>
+      <div class="author-text">
+        <div class="author-name">Nakshatra Khanna</div>
+        <div class="author-role">Junior Business Analyst</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD BODY -->
+  <div class="dashboard-body">
+
+    <!-- ROW 1: KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-header">
+          <div class="kpi-label">Gross Merchandise Value (GMV)</div>
+          <div class="kpi-badge badge-pos">▲ +14.2% YoY</div>
+        </div>
+        <div class="kpi-value">₹1,10,00,000</div>
+        <div class="kpi-subtext">Across 1,200 commercial transactions</div>
+      </div>
+
+      <div class="kpi-card kpi-red">
+        <div class="kpi-header">
+          <div class="kpi-label">60-Day Customer Churn Rate</div>
+          <div class="kpi-badge badge-neg">▲ 78.4% Cliff</div>
+        </div>
+        <div class="kpi-value">78.4%</div>
+        <div class="kpi-subtext">298 out of 380 first-time buyers churned</div>
+      </div>
+
+      <div class="kpi-card kpi-emerald">
+        <div class="kpi-header">
+          <div class="kpi-label">Average Customer LTV</div>
+          <div class="kpi-badge badge-neutral">380 Accounts</div>
+        </div>
+        <div class="kpi-value">₹28,947</div>
+        <div class="kpi-subtext">Champions: ₹39.1k | Lapsed: ₹11.4k</div>
+      </div>
+
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-header">
+          <div class="kpi-label">Revenue At Risk (At-Risk Segment)</div>
+          <div class="kpi-badge badge-neg">67 Accounts</div>
+        </div>
+        <div class="kpi-value">₹18,50,000</div>
+        <div class="kpi-subtext">Inactive high spenders (>60 days silent)</div>
+      </div>
+    </div>
+
+    <!-- ROW 2: COHORT HEATMAP & RFM SEGMENTATION -->
+    <div class="grid-row-2">
+      <!-- Cohort Heatmap -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="indicator"></span> Monthly Customer Cohort Retention Heatmap (%)</div>
+          <div class="card-tag">SQL Window Functions (PostgreSQL)</div>
+        </div>
+
+        <table class="cohort-table">
+          <thead>
+            <tr>
+              <th>Cohort</th>
+              <th>Users</th>
+              <th>M0</th>
+              <th>M1</th>
+              <th>M2</th>
+              <th>M3</th>
+              <th>M4</th>
+              <th>M5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jan 2026</td>
+              <td>68</td>
+              <td class="heat heat-100">100%</td>
+              <td class="heat heat-high">23.5%</td>
+              <td class="heat heat-med">19.1%</td>
+              <td class="heat heat-low">16.2%</td>
+              <td class="heat heat-low">14.7%</td>
+              <td class="heat heat-drop">13.2%</td>
+            </tr>
+            <tr>
+              <td>Feb 2026</td>
+              <td>62</td>
+              <td class="heat heat-100">100%</td>
+              <td class="heat heat-high">22.6%</td>
+              <td class="heat heat-med">17.7%</td>
+              <td class="heat heat-low">14.5%</td>
+              <td class="heat heat-drop">12.9%</td>
+              <td style="color:#475569; text-align:center;">-</td>
+            </tr>
+            <tr>
+              <td>Mar 2026</td>
+              <td>74</td>
+              <td class="heat heat-100">100%</td>
+              <td class="heat heat-high">24.3%</td>
+              <td class="heat heat-med">18.9%</td>
+              <td class="heat heat-low">16.2%</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+            </tr>
+            <tr>
+              <td>Apr 2026</td>
+              <td>59</td>
+              <td class="heat heat-100">100%</td>
+              <td class="heat heat-med">20.3%</td>
+              <td class="heat heat-low">15.3%</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+            </tr>
+            <tr>
+              <td>May 2026</td>
+              <td>65</td>
+              <td class="heat heat-100">100%</td>
+              <td class="heat heat-high">21.5%</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+            </tr>
+            <tr>
+              <td>Jun 2026</td>
+              <td>52</td>
+              <td class="heat heat-100">100%</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+              <td style="color:#475569; text-align:center;">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RFM Segmentation -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="indicator" style="background:#10b981;"></span> RFM Behavioral Customer Segmentation</div>
+          <div class="card-tag">Python (Pandas Quantiles)</div>
+        </div>
+
+        <div class="rfm-container">
+          <!-- Circular Chart -->
+          <div class="rfm-donut">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="50" fill="transparent" stroke="#1f2937" stroke-width="18" />
+              <!-- Champions: 32.4% -> stroke-dasharray="101.8 314.16" -->
+              <circle cx="70" cy="70" r="50" fill="transparent" stroke="#10b981" stroke-width="18" stroke-dasharray="101.8 314.16" stroke-dashoffset="0" />
+              <!-- Promising: 18.2% -> stroke-dasharray="57.2 314.16" -->
+              <circle cx="70" cy="70" r="50" fill="transparent" stroke="#3b82f6" stroke-width="18" stroke-dasharray="57.2 314.16" stroke-dashoffset="-101.8" />
+              <!-- At Risk: 17.6% -> stroke-dasharray="55.3 314.16" -->
+              <circle cx="70" cy="70" r="50" fill="transparent" stroke="#f59e0b" stroke-width="18" stroke-dasharray="55.3 314.16" stroke-dashoffset="-159.0" />
+              <!-- Hibernating: 31.8% -> stroke-dasharray="99.9 314.16" -->
+              <circle cx="70" cy="70" r="50" fill="transparent" stroke="#ef4444" stroke-width="18" stroke-dasharray="99.9 314.16" stroke-dashoffset="-214.3" />
+            </svg>
+            <div class="rfm-donut-text">
+              <div class="val">380</div>
+              <div class="lbl">CUSTOMERS</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="rfm-legend">
+            <div class="rfm-row champions">
+              <div class="rfm-title-grp">
+                <h5>Champions (High Loyalty)</h5>
+                <span>3+ orders, high monetary LTV</span>
+              </div>
+              <div class="rfm-metrics">
+                <div class="pct" style="color:#10b981;">32.4%</div>
+                <div class="rev">₹48.2L Rev</div>
+              </div>
+            </div>
+
+            <div class="rfm-row promising">
+              <div class="rfm-title-grp">
+                <h5>Promising New Shoppers</h5>
+                <span>Recent 1st order (&lt;20 days)</span>
+              </div>
+              <div class="rfm-metrics">
+                <div class="pct" style="color:#3b82f6;">18.2%</div>
+                <div class="rev">₹19.4L Rev</div>
+              </div>
+            </div>
+
+            <div class="rfm-row atrisk">
+              <div class="rfm-title-grp">
+                <h5>At-Risk High Spenders</h5>
+                <span>Past high spend, inactive &gt;60d</span>
+              </div>
+              <div class="rfm-metrics">
+                <div class="pct" style="color:#f59e0b;">17.6%</div>
+                <div class="rev">₹28.6L Rev</div>
+              </div>
+            </div>
+
+            <div class="rfm-row hibernating">
+              <div class="rfm-title-grp">
+                <h5>Hibernating / Churned</h5>
+                <span>Single discount buy, dormant</span>
+              </div>
+              <div class="rfm-metrics">
+                <div class="pct" style="color:#ef4444;">31.8%</div>
+                <div class="rev">₹13.8L Rev</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: CATEGORY RETENTION, TIMELINE CLIFF, STRATEGIC LEVERS -->
+    <div class="grid-row-3">
+      <!-- Category Benchmark -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="indicator" style="background:#8b5cf6;"></span> Category Repurchase Rates (%)</div>
+          <div class="card-tag">Benchmark</div>
+        </div>
+
+        <div class="bar-chart">
+          <div class="bar-item">
+            <div class="bar-info">
+              <span>Apparel & Fashion</span>
+              <strong style="color:#34d399;">24.2% (₹1,450 AOV)</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-emerald" style="width: 24.2%;"></div></div>
+          </div>
+
+          <div class="bar-item">
+            <div class="bar-info">
+              <span>Home & Kitchen</span>
+              <strong style="color:#60a5fa;">22.8% (₹2,100 AOV)</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-blue" style="width: 22.8%;"></div></div>
+          </div>
+
+          <div class="bar-item">
+            <div class="bar-info">
+              <span>Electronics & Gadgets</span>
+              <strong style="color:#fbbf24;">18.5% (₹3,250 AOV)</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-amber" style="width: 18.5%;"></div></div>
+          </div>
+
+          <div class="bar-item">
+            <div class="bar-info">
+              <span>Beauty & Personal Care</span>
+              <strong style="color:#f87171;">16.8% (₹680 AOV)</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-rose" style="width: 16.8%;"></div></div>
+          </div>
+
+          <div class="bar-item">
+            <div class="bar-info">
+              <span>Books & Stationery</span>
+              <strong style="color:#f87171;">14.1% (₹420 AOV)</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-rose" style="width: 14.1%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lifecycle Drop-off Cliff -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="indicator" style="background:#f59e0b;"></span> The 60-Day Churn Funnel Timeline</div>
+          <div class="card-tag">Behavioral Milestones</div>
+        </div>
+
+        <div class="timeline-container">
+          <div class="time-node">
+            <div class="node-badge nb-green">Day 0</div>
+            <div class="node-text">
+              <h6>100% Cohort Activation</h6>
+              <p>Initial order placement & unboxing peak.</p>
+            </div>
+          </div>
+
+          <div class="time-node">
+            <div class="node-badge nb-blue">Day 10</div>
+            <div class="node-text">
+              <h6>Optimal Re-engagement Point</h6>
+              <p>Category cross-sell window before interest wanes.</p>
+            </div>
+          </div>
+
+          <div class="time-node">
+            <div class="node-badge nb-amber">Day 24</div>
+            <div class="node-text">
+              <h6>The Decisive Velocity Cliff</h6>
+              <p>86% of repeat purchases happen before this date.</p>
+            </div>
+          </div>
+
+          <div class="time-node">
+            <div class="node-badge nb-red">Day 60+</div>
+            <div class="node-text">
+              <h6>Permanent Churn State (78.4%)</h6>
+              <p>Reactivation CAC increases by 4.2x.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategic Levers & ROI -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="indicator" style="background:#10b981;"></span> Strategic Recovery Levers & ROI</div>
+          <div class="card-tag">Recommendations</div>
+        </div>
+
+        <div class="lever-card" style="border-color:#3b82f6;">
+          <h6>1. Automated Day-10 Cross-Sell Drip <span class="lever-pill">+12.4% Repeat</span></h6>
+          <p>Trigger tailored product replenishment flows before customer reaches Day 24 cliff.</p>
+        </div>
+
+        <div class="lever-card" style="border-color:#10b981;">
+          <h6>2. Ad Spend Reallocation <span class="lever-pill">₹6.8L LTV Saved</span></h6>
+          <p>Shift 20% acquisition ad budget into VIP retention for the 67 "At-Risk High Spenders".</p>
+        </div>
+
+        <div class="lever-card" style="border-color:#f59e0b;">
+          <h6>3. Gamified 30-Day Velocity Points <span class="lever-pill">-18 Days Cycle</span></h6>
+          <p>Double loyalty points for second purchase placed within 30 days of first unboxing.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
